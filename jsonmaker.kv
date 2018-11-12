@@ -1,0 +1,144 @@
+#:import ScrollEffect  kivy.effects.scroll.ScrollEffect
+
+<MyBoxLayout@BoxLayout>:
+    canvas.before:
+        Color:
+            rgba: 0.86, 0.9, 0.95, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<ScrollView>:
+    do_scroll_x: True
+    do_scroll_y: True
+    scroll_type: ['bars', 'content']
+    scroll_wheel_distance: dp(114)
+    bar_width: dp(20)
+    effect_cls: ScrollEffect
+    canvas.before:
+        Color:
+            rgba: 1.0, 1.0, 1.0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<ButtonBoxLayout@MyBoxLayout>:
+    size_hint_y: 1
+    padding: 50
+
+<Header@Label>
+    color: 1, 1, 1, 1
+
+<Button>
+    size_hint: (None, None)
+    size: (280, 50)
+
+<JsonMakerScreen>:
+    MyBoxLayout:
+        MyBoxLayout:
+            size_hint_x: 0.7
+            orientation: "vertical"
+            padding: 10
+
+            ScrollView:
+                size_hint_y: 1
+                item_view_data: item_view_data
+                do_scroll_x: False
+                scroll_x: self.item_view_data.scroll_x
+                BoxLayout:
+                    canvas.before:
+                        Color:
+                            rgba: 0.7, 0.7, 0.8, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    size_hint_x: None
+                    width: 1.3*root.width
+                    Header:
+                        size_hint_x: 0.15
+                        text: "No."
+                    Header:
+                        size_hint_x: 0.7
+                        text: "index"
+                    Header:
+                        size_hint_x: 1.0
+                        text: "name"
+                    Header:
+                        size_hint_x: 0.3
+                        text: "page"
+                    Header:
+                        size_hint_x: 0.5
+                        text: "title"
+                    Header:
+                        size_hint_x: 0.3
+                        text: "color"
+            ScrollView:
+                id: item_view_data
+                size_hint_y: 15
+                BoxLayout:
+                    id: container
+                    orientation: 'vertical'
+                    size_hint_x: None
+                    size_hint_y: None
+                    width: 1.3*root.width
+                    height: 1.5*root.width
+
+            Label:
+                id: message
+                size_hint_y: 2
+                color: 0, 0, 0, 1
+                text: ""
+
+        MyBoxLayout:
+            size_hint_x: 0.3
+            orientation: "vertical"
+            ButtonBoxLayout:
+                Button:
+                    id: get_site_info_button
+                    text: "キーワードサイトからの情報取得"
+                    on_press: root.get_site_info()
+            ButtonBoxLayout:
+                Button:
+                    text: "Excelの読込"
+                    on_press: root.disp_drag_and_drop_msg()
+            ButtonBoxLayout:
+                Button:
+                    id: dump_checkoutprofiles_button
+                    text: "checkoutprofiles.json出力"
+                    disabled: True
+                    on_press: root.dump_checkoutprofiles()
+            ButtonBoxLayout:
+                padding: 0
+                orientation: "vertical"
+                BoxLayout
+                    size_hint_y: 3
+                    Label:
+                        size_hint_x: 0.7
+                        text: ""
+                    Button:
+                        id: dump_releaseprofiles_button
+                        size_hint_x: 4
+                        text: "releaseprofiles.json出力"
+                        disabled: True
+                        on_press: root.dump_releaseprofiles()
+                    Label:
+                        size_hint_x: 0.7
+                        text: ""
+                BoxLayout
+                    size_hint_y: 1
+                    Label:
+                        size_hint_x: 5
+                        color: 0, 0, 0, 1
+                        text: "          1ファイルのデータ数"
+                    TextInput:
+                        id: max_data_num_per_file
+                        size_hint_x: 2
+                        text: "100"
+                        multiline: False
+                        write_tab: False
+                    Label:
+                        size_hint_x: 1
+                        text: ""
+            ButtonBoxLayout:
+                size_hint_y: 0.1
+
