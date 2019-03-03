@@ -119,6 +119,9 @@ CHECKOUT_PROFILES_JSON = "checkoutprofiles.json"
 UTF8 = "utf8"
 SATURDAY_INDEX = 5
 
+CONFIG_DICT = {}
+CONFIG_KEY_KEYWORD_URL = "KEYWORD_URL"
+
 
 class JsonMakerScreen(Screen):
     def __init__(self, **kwargs):
@@ -151,7 +154,8 @@ class JsonMakerScreen(Screen):
 
     def update_item_view(self, dt):
         try:
-            url = self.get_latest_url()
+            #url = self.get_latest_url()
+            url = CONFIG_DICT[CONFIG_KEY_KEYWORD_URL]
             self.parse_site_info(url)
             scrollview = self.ids["container"]
             scrollview.clear_widgets()
@@ -243,16 +247,18 @@ class JsonMakerScreen(Screen):
         self.item_list = []
         r = requests.get(url, headers=HEADERS)
         soup = BeautifulSoup(r.text, "lxml")
+        print(r.text)
         for tab in soup.find_all("table"):
             page = None
+            is_1st_td = True
             for tr in tab.find_all("tr"):
-                th_list = tr.find_all("th")
-                if len(th_list) > 0:
-                    page = self.get_page(th_list)
-
                 td_list = tr.find_all("td")
                 if len(td_list) > 0:
-                    self.save_item_info(page, td_list)
+                    if is_1st_td:
+                        page = self.get_page(td_list)
+                        is_1st_td = False
+                    else:
+                        self.save_item_info(page, td_list)
 
     def dump_checkoutprofiles(self):
         try:
@@ -488,7 +494,19 @@ class JsonMakerApp(App):
         return JsonMakerScreen()
 
 
+def load_config():
+    for line in open("./config.txt", "r"):
+        items = line.replace("\n", "").split("=")
+
+        if len(items) != 2:
+            continue
+
+        if items[0] == CONFIG_KEY_KEYWORD_URL:
+            CONFIG_DICT[CONFIG_KEY_KEYWORD_URL] = items[1]
+
+
 def setup_config():
+    load_config()
     Config.set('modules', 'inspector', '')  # Inspectorを有効にする
     Config.set('graphics', 'width', 1280)  # Windowの幅を1280にする
     Config.set('graphics', 'maxfps', 20)  # フレームレートを最大で20にする
